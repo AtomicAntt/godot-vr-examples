@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://v1i3ghuexk0s"]
+
+[ext_resource type="Script" uid="uid://ces1j6plojyra" path="res://addons/godot-xr-tools/xr/start_xr.gd" id="1_k5lcw"]
+[ext_resource type="Texture2D" uid="uid://bqryjdupy6ffh" path="res://textures/placeholder.png" id="2_euxyd"]
+[ext_resource type="PackedScene" uid="uid://bq86r4yll8po" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_fullglove_low.tscn" id="3_5xujp"]
+[ext_resource type="Material" uid="uid://lpuv1uvjkmr1" path="res://materials/HandMaterial.tres" id="4_4c12p"]
+[ext_resource type="PackedScene" uid="uid://xqimcf20s2jp" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_fullglove_low.tscn" id="5_dd34m"]
+
+[sub_resource type="Environment" id="Environment_nvpb1"]
+background_mode = 1
+background_color = Color(0.28851813, 0.28851795, 0.28851798, 1)
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.03615423, 0.04367757, 0.055487983, 1)
+fog_density = 0.15
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1hxgd"]
+albedo_texture = ExtResource("2_euxyd")
+uv1_triplanar = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1pnex"]
+size = Vector2(100, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_euxyd"]
+size = Vector3(100, 0.001, 100)
+
+[node name="ExamplesScene" type="Node3D" unique_id=1140125279]
+script = ExtResource("1_k5lcw")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=485416645]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1119870776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1219020548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -0.5)
+tracker = &"left_hand"
+pose = &"grip"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=143554715 instance=ExtResource("3_5xujp")]
+hand_material_override = ExtResource("4_4c12p")
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=919116358]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.5)
+tracker = &"right_hand"
+pose = &"grip"
+
+[node name="RightHand" parent="XROrigin3D/RightController" unique_id=451402637 instance=ExtResource("5_dd34m")]
+hand_material_override = ExtResource("4_4c12p")
+
+[node name="Environment" type="Node3D" parent="." unique_id=2016643851]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=426484568]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_bias = 0.01
+shadow_transmittance_bias = 0.005
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=1281539529]
+environment = SubResource("Environment_nvpb1")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Environment" unique_id=1767541437]
+
+[node name="Floor" type="MeshInstance3D" parent="Environment/StaticBody3D" unique_id=1511199888]
+material_override = SubResource("StandardMaterial3D_1hxgd")
+mesh = SubResource("PlaneMesh_1pnex")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/StaticBody3D" unique_id=358861378]
+visible = false
+shape = SubResource("BoxShape3D_euxyd")
