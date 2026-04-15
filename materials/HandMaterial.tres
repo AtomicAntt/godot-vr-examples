@@ -1,5 +1,3 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://lpuv1uvjkmr1"]
 
 [resource]
-transparency = 1
-diffuse_mode = 3
