@@ -58,6 +58,18 @@ hand_material_override = ExtResource("4_4c12p")
 [node name="FunctionPickup" parent="XROrigin3D/LeftController" unique_id=740141642 instance=ExtResource("4_csglg")]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
 
+[node name="LeftTrackedHand" type="Node3D" parent="XROrigin3D/LeftController" unique_id=1809375860 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
+script = ExtResource("6_csglg")
+hand_mimic = NodePath("../LeftHand")
+function_pickup = NodePath("../FunctionPickup")
+
+[node name="LeftHandHumanoid2" parent="XROrigin3D/LeftController/LeftTrackedHand" unique_id=1552018867 instance=ExtResource("6_dd34m")]
+
+[node name="LeftHandHumanoidMesh" parent="XROrigin3D/LeftController/LeftTrackedHand/LeftHandHumanoid2/LeftHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1552018867, 91611407) index="0" unique_id=170384629]
+material_override = ExtResource("4_4c12p")
+
+[node name="XRHandModifier3D" type="XRHandModifier3D" parent="XROrigin3D/LeftController/LeftTrackedHand/LeftHandHumanoid2/LeftHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1552018867, 91611407) index="1" unique_id=740091762]
+
 [node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=919116358]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.5)
 tracker = &"right_hand"
@@ -70,31 +82,17 @@ hand_material_override = ExtResource("4_4c12p")
 [node name="FunctionPickup" parent="XROrigin3D/RightController" unique_id=1677884950 instance=ExtResource("4_csglg")]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
 
-[node name="LeftHandMesh" type="XRNode3D" parent="XROrigin3D" unique_id=1037206027 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
-tracker = &"/user/hand_tracker/left"
+[node name="RightTrackedHand" type="Node3D" parent="XROrigin3D/RightController" unique_id=805734747 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
 script = ExtResource("6_csglg")
-hand_mimic = NodePath("../LeftController/LeftHand")
-function_pickup = NodePath("../LeftController/FunctionPickup")
+hand_mimic = NodePath("../RightHand")
+function_pickup = NodePath("../FunctionPickup")
 
-[node name="LeftHandHumanoid2" parent="XROrigin3D/LeftHandMesh" unique_id=1552018867 instance=ExtResource("6_dd34m")]
+[node name="RightHandHumanoid2" parent="XROrigin3D/RightController/RightTrackedHand" unique_id=1141550220 instance=ExtResource("8_csglg")]
 
-[node name="LeftHandHumanoidMesh" parent="XROrigin3D/LeftHandMesh/LeftHandHumanoid2/LeftHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1552018867, 91611407) index="0" unique_id=170384629]
-material_override = ExtResource("4_4c12p")
-
-[node name="XRHandModifier3D" type="XRHandModifier3D" parent="XROrigin3D/LeftHandMesh/LeftHandHumanoid2/LeftHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1552018867, 91611407) index="1" unique_id=740091762]
-
-[node name="RightHandMesh" type="XRNode3D" parent="XROrigin3D" unique_id=387506660 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
-tracker = &"/user/hand_tracker/right"
-script = ExtResource("6_csglg")
-hand_mimic = NodePath("../RightController/RightHand")
-function_pickup = NodePath("../RightController/FunctionPickup")
-
-[node name="RightHandHumanoid2" parent="XROrigin3D/RightHandMesh" unique_id=1141550220 instance=ExtResource("8_csglg")]
-
-[node name="RightHandHumanoidMesh" parent="XROrigin3D/RightHandMesh/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="0" unique_id=1055310796]
+[node name="RightHandHumanoidMesh" parent="XROrigin3D/RightController/RightTrackedHand/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="0" unique_id=1055310796]
 surface_material_override/0 = ExtResource("4_4c12p")
 
-[node name="XRHandModifier3D" type="XRHandModifier3D" parent="XROrigin3D/RightHandMesh/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="1" unique_id=2062059061]
+[node name="XRHandModifier3D" type="XRHandModifier3D" parent="XROrigin3D/RightController/RightTrackedHand/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="1" unique_id=2062059061]
 hand_tracker = &"/user/hand_tracker/right"
 
 [node name="Environment" type="Node3D" parent="." unique_id=2016643851]
@@ -134,5 +132,5 @@ shape = SubResource("BoxShape3D_5xujp")
 [node name="Can" parent="Pickables" unique_id=2070288848 instance=ExtResource("8_4c12p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16266322, 0.53366464, -0.721269)
 
-[editable path="XROrigin3D/LeftHandMesh/LeftHandHumanoid2"]
-[editable path="XROrigin3D/RightHandMesh/RightHandHumanoid2"]
+[editable path="XROrigin3D/LeftController/LeftTrackedHand/LeftHandHumanoid2"]
+[editable path="XROrigin3D/RightController/RightTrackedHand/RightHandHumanoid2"]
