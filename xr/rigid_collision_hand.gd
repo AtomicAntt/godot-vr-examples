@@ -16,30 +16,43 @@ func _ready() -> void:
 	add_child(_palm_collision_shape, false, Node.INTERNAL_MODE_BACK)
 	
 	top_level = true
-	linear_damp = 50
-	angular_damp = 50
+	inertia = Vector3(0.01, 0.01, 0.01)
+	#linear_damp = 50
+	#angular_damp = 50
 	
 	add_skeleton_collisions()
 	hand_skeleton.skeleton_updated.connect(add_skeleton_collisions)
 
-func _physics_process(_delta: float) -> void:
-	_move_hand_rigidbody_to_contr(self, xr_controller)
+func _physics_process(delta: float) -> void:
+	apply_force_to_hand(delta, self, xr_controller.global_transform.origin)
+	apply_torque_to_hand(delta, self, xr_controller.global_basis)
 
-func _move_hand_rigidbody_to_contr(hand_rigidbody: RigidBody3D, hand_contr: XRController3D) -> void:
-	# 1 force hand rigidbody to hand contr
-	var move_delta: Vector3 = hand_contr.global_position - hand_rigidbody.global_position
+func apply_force_to_hand(delta: float, hand_rigidbody: RigidBody3D, controller_global_position: Vector3) -> void:
+	var half_t2: float = 0.5 * delta * delta
+	var state: PhysicsDirectBodyState3D = PhysicsServer3D.body_get_direct_state(hand_rigidbody.get_rid())
+	var move_delta: Vector3 = controller_global_position - hand_rigidbody.global_position
 	
-	var coef_force: float = 300.0
-	hand_rigidbody.apply_central_force(move_delta * coef_force)
+	var current_velocity: Vector3 = state.linear_velocity * clamp(1.0 - (state.total_linear_damp * delta), 0.0, 1.0)
+	current_velocity += state.total_gravity * delta
 	
-	# 2 torque hand rigidbody to hand contr
-	var quat_hand_rigidbody: Quaternion = hand_rigidbody.global_transform.basis.get_rotation_quaternion()
-	var quat_hand_contr: Quaternion = hand_contr.global_transform.basis.get_rotation_quaternion()
-	var quat_delta: Quaternion = quat_hand_contr * (quat_hand_rigidbody.inverse())
-	var rotation_delta: Vector3 = Vector3(quat_delta.x, quat_delta.y, quat_delta.z) * quat_delta.w
+	var needed_acceleration: Vector3 = (move_delta - (current_velocity * delta)) / half_t2
+	var linear_force: Vector3 = (0.5 / state.inverse_mass) * needed_acceleration
 	
-	var coef_torque: float = 6.0
-	hand_rigidbody.apply_torque(rotation_delta * coef_torque)
+	hand_rigidbody.apply_central_force(linear_force)
+
+func apply_torque_to_hand(delta: float, hand_rigidbody: RigidBody3D, controller_global_orientation: Basis) -> void:
+	var half_t2: float = 0.5 * delta * delta
+	var state: PhysicsDirectBodyState3D = PhysicsServer3D.body_get_direct_state(hand_rigidbody.get_rid())
+	var moment_of_inertia: Vector3 = Vector3(1.0, 1.0, 1.0) / state.inverse_inertia
+	
+	var delta_axis_angle: Vector3 = rotation_to_axis_angle(hand_rigidbody.global_basis, controller_global_orientation)
+	var velocity: Vector3 = -hand_rigidbody.angular_velocity
+	
+	var needed_angular_acceleration: Vector3 = (delta_axis_angle + (velocity * delta)) / half_t2
+	var torque: Vector3 = moment_of_inertia * needed_angular_acceleration * 0.5
+	
+	hand_rigidbody.apply_torque(torque)
+	
 
 func add_skeleton_collisions() -> void:
 	if hand_skeleton:
@@ -75,3 +88,12 @@ func add_skeleton_collisions() -> void:
 				#collision_node.transform = bone_transform * offset
 				var global_bone_transform = hand_skeleton.global_transform * bone_transform
 				collision_node.transform = global_transform.inverse() * global_bone_transform * offset
+
+## Calculate the axis-angle rotation between two orientations.
+func rotation_to_axis_angle(start_orientation : Basis, end_orientation : Basis) -> Vector3:
+	var delta_basis: Basis = end_orientation * start_orientation.inverse()
+	var delta_quad: Quaternion = delta_basis.get_rotation_quaternion()
+	var delta_axis: Vector3 = delta_quad.get_axis().normalized()
+	var delta_angle: float = delta_quad.get_angle()
+
+	return delta_axis * delta_angle
