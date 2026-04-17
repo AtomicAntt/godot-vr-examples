@@ -17,8 +17,8 @@ func _ready() -> void:
 	
 	top_level = true
 	inertia = Vector3(0.01, 0.01, 0.01)
-	#linear_damp = 50
-	#angular_damp = 50
+	continuous_cd = true
+	process_physics_priority = -90
 	
 	add_skeleton_collisions()
 	hand_skeleton.skeleton_updated.connect(add_skeleton_collisions)
@@ -64,8 +64,13 @@ func add_skeleton_collisions() -> void:
 			offset.origin = Vector3(0.0, 0.015, 0.0) # move to side of object
 
 			var bone_name = hand_skeleton.get_bone_name(i)
-			if bone_name == "LeftHand" or bone_name == "RightHand":
-				offset.origin = Vector3(0.0, 0.025, 0.0) # move to side of object
+			if bone_name == "RightHand":
+				offset.basis = Basis.from_euler(Vector3(0, deg_to_rad(0), deg_to_rad(25)))
+				#offset.origin = Vector3(0.0, 0.025, 0.0) # move to side of object
+				collision_node = _palm_collision_shape
+			elif bone_name == "LeftHand":
+				offset.basis = Basis.from_euler(Vector3(0, deg_to_rad(0), deg_to_rad(-25)))
+				#offset.origin = Vector3(0.0, 0.025, 0.0) # move to side of object
 				collision_node = _palm_collision_shape
 			elif bone_name.contains("Proximal") or bone_name.contains("Intermediate") or \
 				bone_name.contains("Distal"):
