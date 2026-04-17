@@ -46,7 +46,7 @@ func _process(_delta: float) -> void:
 	var hand_transform: Transform3D = pose.get_adjusted_transform()
 
 	visible = true
-	transform = _controller.global_transform.affine_inverse() * hand_transform
+	transform = _controller.global_transform.inverse() * hand_transform
 
 
 func _ready() -> void:
