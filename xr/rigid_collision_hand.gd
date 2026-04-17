@@ -62,7 +62,7 @@ func add_skeleton_collisions() -> void:
 					collision_node = CollisionShape3D.new()
 					collision_node.name = bone_name + "Col"
 					collision_node.shape = \
-						preload("res://xr/xrt2_hand_palm.shape")
+						preload("res://xr/xrt2_hand_digit.shape")
 					add_child(collision_node, false, Node.INTERNAL_MODE_BACK)
 					_digit_collision_shapes[bone_name] = collision_node
 
