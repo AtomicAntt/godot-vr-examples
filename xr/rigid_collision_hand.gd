@@ -91,6 +91,8 @@ func add_skeleton_collisions() -> void:
 
 				# For now just copy our transform to our collision shape
 				#collision_node.transform = bone_transform * offset
+				
+				# Also account for offset in positioning hands using XRHandModifier3D
 				var global_bone_transform = hand_skeleton.global_transform * bone_transform
 				collision_node.transform = global_transform.inverse() * global_bone_transform * offset
 

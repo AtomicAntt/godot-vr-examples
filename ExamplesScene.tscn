@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://v1i3ghuexk0s"]
 
 [ext_resource type="Script" uid="uid://cr4q2sughqjdp" path="res://xr/start_xr.gd" id="1_4jpk7"]
-[ext_resource type="PackedScene" uid="uid://bpdj5njb8nhot" path="res://addons/godot-xr-tools/hands/scenes/highpoly/left_fullglove_hand.tscn" id="2_5xujp"]
 [ext_resource type="Texture2D" uid="uid://bqryjdupy6ffh" path="res://textures/placeholder.png" id="2_euxyd"]
 [ext_resource type="Material" uid="uid://lpuv1uvjkmr1" path="res://materials/HandMaterial.tres" id="4_4c12p"]
 [ext_resource type="PackedScene" uid="uid://b4ysuy43poobf" path="res://addons/godot-xr-tools/functions/function_pickup.tscn" id="4_csglg"]
-[ext_resource type="PackedScene" uid="uid://d1tl07geqm5xq" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_fullglove_hand.tscn" id="4_dd34m"]
-[ext_resource type="Script" uid="uid://d6ro3ervqwgc" path="res://xr/finger_tracking_hand.gd" id="6_csglg"]
+[ext_resource type="Script" uid="uid://bjm5e3ccxpkvu" path="res://xr/xrtools_fth_bind.gd" id="6_6knfx"]
 [ext_resource type="PackedScene" uid="uid://dfpwh0nvcb8i5" path="res://hands/LeftHandHumanoid.gltf" id="6_dd34m"]
 [ext_resource type="Script" uid="uid://v24k3wky50vp" path="res://xr/rigid_collision_hand.gd" id="7_6knfx"]
+[ext_resource type="PackedScene" uid="uid://njx823gyk04n" path="res://addons/godot-xr-tools/hands/scenes/highpoly/left_hand.tscn" id="7_g0yu7"]
 [ext_resource type="PackedScene" uid="uid://3vegggwxq48j" path="res://interactables/can/scenes/can.tscn" id="8_4c12p"]
 [ext_resource type="PackedScene" uid="uid://chlax58qn2qof" path="res://hands/RightHandHumanoid.gltf" id="8_csglg"]
+[ext_resource type="PackedScene" uid="uid://raeeicvvindd" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_hand.tscn" id="9_paiur"]
 
 [sub_resource type="Environment" id="Environment_nvpb1"]
 background_mode = 1
@@ -52,22 +52,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -0.5)
 tracker = &"left_hand"
 pose = &"grip"
 
-[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=282851230 instance=ExtResource("2_5xujp")]
-visible = false
-hand_material_override = ExtResource("4_4c12p")
-
 [node name="FunctionPickup" parent="XROrigin3D/LeftController" unique_id=740141642 instance=ExtResource("4_csglg")]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=1737855935 instance=ExtResource("7_g0yu7")]
+visible = false
 
 [node name="RigidCollisionHand" type="RigidBody3D" parent="XROrigin3D/LeftController" unique_id=2044456083 node_paths=PackedStringArray("hand_skeleton", "xr_controller")]
 script = ExtResource("7_6knfx")
 hand_skeleton = NodePath("LeftTrackedHand/LeftHandHumanoid2/LeftHandHumanoid/Skeleton3D")
 xr_controller = NodePath("..")
 
-[node name="LeftTrackedHand" type="Node3D" parent="XROrigin3D/LeftController/RigidCollisionHand" unique_id=1809375860 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
-script = ExtResource("6_csglg")
-hand_mimic = NodePath("../../LeftHand")
-function_pickup = NodePath("../../FunctionPickup")
+[node name="LeftTrackedHand" type="Node3D" parent="XROrigin3D/LeftController/RigidCollisionHand" unique_id=1809375860 node_paths=PackedStringArray("xrtools_hand", "xrt_function_pickup")]
+script = ExtResource("6_6knfx")
+xrtools_hand = NodePath("../../LeftHand")
+xrt_function_pickup = NodePath("../../FunctionPickup")
 
 [node name="LeftHandHumanoid2" parent="XROrigin3D/LeftController/RigidCollisionHand/LeftTrackedHand" unique_id=1552018867 instance=ExtResource("6_dd34m")]
 
@@ -81,27 +80,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.5)
 tracker = &"right_hand"
 pose = &"grip"
 
-[node name="RightHand" parent="XROrigin3D/RightController" unique_id=642748864 instance=ExtResource("4_dd34m")]
-visible = false
-hand_material_override = ExtResource("4_4c12p")
-
 [node name="FunctionPickup" parent="XROrigin3D/RightController" unique_id=1677884950 instance=ExtResource("4_csglg")]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+
+[node name="RightHand" parent="XROrigin3D/RightController" unique_id=2142752714 instance=ExtResource("9_paiur")]
+visible = false
 
 [node name="RigidCollisionHand" type="RigidBody3D" parent="XROrigin3D/RightController" unique_id=1763715879 node_paths=PackedStringArray("hand_skeleton", "xr_controller")]
 script = ExtResource("7_6knfx")
 hand_skeleton = NodePath("RightTrackedHand/RightHandHumanoid2/RightHandHumanoid/Skeleton3D")
 xr_controller = NodePath("..")
 
-[node name="RightTrackedHand" type="Node3D" parent="XROrigin3D/RightController/RigidCollisionHand" unique_id=805734747 node_paths=PackedStringArray("hand_mimic", "function_pickup")]
-script = ExtResource("6_csglg")
-hand_mimic = NodePath("../../RightHand")
-function_pickup = NodePath("../../FunctionPickup")
+[node name="RightTrackedHand" type="Node3D" parent="XROrigin3D/RightController/RigidCollisionHand" unique_id=805734747 node_paths=PackedStringArray("xrtools_hand", "xrt_function_pickup")]
+script = ExtResource("6_6knfx")
+xrtools_hand = NodePath("../../RightHand")
+xrt_function_pickup = NodePath("../../FunctionPickup")
 
 [node name="RightHandHumanoid2" parent="XROrigin3D/RightController/RigidCollisionHand/RightTrackedHand" unique_id=1141550220 instance=ExtResource("8_csglg")]
 
 [node name="RightHandHumanoidMesh" parent="XROrigin3D/RightController/RigidCollisionHand/RightTrackedHand/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="0" unique_id=1055310796]
-surface_material_override/0 = ExtResource("4_4c12p")
+material_override = ExtResource("4_4c12p")
 
 [node name="XRHandModifier3D" type="XRHandModifier3D" parent="XROrigin3D/RightController/RigidCollisionHand/RightTrackedHand/RightHandHumanoid2/RightHandHumanoid/Skeleton3D" parent_id_path=PackedInt32Array(1141550220, 261556470) index="1" unique_id=2062059061]
 hand_tracker = &"/user/hand_tracker/right"

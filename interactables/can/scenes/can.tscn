@@ -39,7 +39,6 @@ mesh = SubResource("CylinderMesh_ctgha")
 
 [node name="GrabPointHandLeft" parent="." index="2" unique_id=1232400643 instance=ExtResource("2_cnmkq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.021991825, 0.044305235, -0.064844765)
-visible = true
 hand_pose = SubResource("Resource_jtok0")
 
 [node name="GrabPointHandRight" parent="." index="3" unique_id=1478527171 instance=ExtResource("5_21lrp")]
