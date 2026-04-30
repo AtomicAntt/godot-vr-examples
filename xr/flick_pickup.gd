@@ -19,10 +19,16 @@ const DEFAULT_GRAB_MASK := 0b0000_0000_0000_0000_0000_0000_0000_0100
 ## The collision mask of our ranged grab area. Select the layers which you want to be able to do ranged grabs on.
 @export_flags_3d_physics var grab_collision_mask: int = DEFAULT_GRAB_MASK
 
+## Used for calculations
+var gravity_value: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+
 ## Distance threshold to flick pickup an object.
 @export var ranged_distance: float = 5.0
 ## Angle threshold from hand's forward direction to flick pickup an object.
 @export_range(0, 90) var ranged_angle: float = 45.0
+
+## Time it takes for the object to reach the player's controller after flicking.
+@export var grab_time: float = 0.6
 
 ## Anything in this Area3D will be checked for the flick ranged grab.
 var grab_area: Area3D
@@ -30,11 +36,14 @@ var grab_area: Area3D
 var ranged_collision: CollisionShape3D
 
 ## This is the closest object that can currently be flick picked up.
-var current_closest_object: Node3D
+var current_closest_object: RigidBody3D
+## This is the object currently trying to be flick picked up.
+var focus_object: RigidBody3D
 
 ## List of RigidBody3Ds that are within the grab area.
 var grab_range_list: Array[RigidBody3D] = []
 
+## Whether or not we count the player as holding the grip button on their controller.
 var grip_pressed: bool = false 
 
 ## Once an object is gripped from afar, we store the initial direction to the object when gripped.
@@ -43,7 +52,7 @@ var initial_grip_direction: Vector3
 ## Required change in angle from the initial grip direction of an object to flick pickup them.
 @export_range(0, 30) var flick_angle_threshold: float = 10.0
 ## Required magnitude of the angular velocity to flick pickup an object.
-@export var angular_velocity_threshold: float = 2.0
+@export var angular_velocity_threshold: float = 5.0
 
 func _ready() -> void:
 	if not is_instance_valid(xr_controller):
@@ -140,23 +149,45 @@ func update_closest_object() -> void:
 	if is_instance_valid(new_closest_object):
 		if new_closest_object.has_method("request_highlight"):
 			current_closest_object.request_highlight(self, true)
-			print("beep beep, new object detected!")
 
 func on_grip_release() -> void:
-	if not initial_grip_direction:
+	if not initial_grip_direction or not is_instance_valid(focus_object):
 		return
 	
 	var release_grip_direction: Vector3 = -global_transform.basis.z
 	var angular_velocity: Vector3 = xr_controller.get_pose().angular_velocity
+	var angular_magnitude: float = angular_velocity.length()
 	
 	var dot_product: float = initial_grip_direction.dot(release_grip_direction)
-	if dot_product <= cos(deg_to_rad(flick_angle_threshold)) and angular_velocity.length() >= angular_velocity_threshold:
+	var dot_product_threshold: float = cos(deg_to_rad(flick_angle_threshold))
+	if dot_product <= dot_product_threshold and angular_magnitude >= angular_velocity_threshold:
 		print("Flicked")
+		focus_object.linear_velocity = calculate_linear_velocity(focus_object.global_position)
+		print("Linear velocity: " + str(focus_object.linear_velocity))
 	else:
-		print("Attempted flick")
+		print("Fail flick")
+	focus_object = null
 
 func on_grip_pressed() -> void:
 	if not is_instance_valid(current_closest_object):
 		return
 	initial_grip_direction = global_position.direction_to(current_closest_object.global_position)
-	print("Locking in initial grip direction at " + str(initial_grip_direction))
+	focus_object = current_closest_object
+	print(initial_grip_direction)
+
+## Calculates the initial linear velocity needed to get to the player's hand within grab_time.
+func calculate_linear_velocity(object_global_position: Vector3) -> Vector3:
+	# Certified math moment using kinematic equations
+	
+	# Vertical velocity
+	var calculated_velocity: Vector3
+	var displacement: Vector3 = xr_controller.global_position - object_global_position
+	var half_at_squared: float = (0.5) * (-gravity_value * pow(grab_time, 2))
+	var velocity_y: float = (displacement.y - half_at_squared) / grab_time
+	
+	# Horizontal velocity
+	var velocity_x: float = displacement.x / grab_time
+	var velocity_z: float = displacement.z / grab_time
+	
+	calculated_velocity = Vector3(velocity_x, velocity_y, velocity_z)
+	return calculated_velocity
