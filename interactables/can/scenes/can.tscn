@@ -61,6 +61,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.014966354, 0.05067095, -0.0
 hand_pose = SubResource("Resource_1f2in")
 
 [node name="Highlight" type="Node3D" parent="." index="4" unique_id=447764229]
+visible = false
 script = ExtResource("7_jtok0")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Highlight" index="0" unique_id=1185953370]

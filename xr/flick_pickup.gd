@@ -149,6 +149,9 @@ func update_closest_object() -> void:
 	if is_instance_valid(new_closest_object):
 		if new_closest_object.has_method("request_highlight"):
 			current_closest_object.request_highlight(self, true)
+		# Since it's a new object, if we happen to have grip_pressed, we can go ahead and focus that object.
+		if grip_pressed:
+			set_focus_object(current_closest_object)
 
 func on_grip_release() -> void:
 	if not initial_grip_direction or not is_instance_valid(focus_object):
@@ -160,20 +163,20 @@ func on_grip_release() -> void:
 	
 	var dot_product: float = initial_grip_direction.dot(release_grip_direction)
 	var dot_product_threshold: float = cos(deg_to_rad(flick_angle_threshold))
+	# Basically, we need to ensure that the angle which we release is beyond the flick_angle_threshold.
+	# We also need to ensure that enough angular velocity exists.
 	if dot_product <= dot_product_threshold and angular_magnitude >= angular_velocity_threshold:
 		print("Flicked")
 		focus_object.linear_velocity = calculate_linear_velocity(focus_object.global_position)
 		print("Linear velocity: " + str(focus_object.linear_velocity))
 	else:
 		print("Fail flick")
-	focus_object = null
+	unfocus()
 
 func on_grip_pressed() -> void:
 	if not is_instance_valid(current_closest_object):
 		return
-	initial_grip_direction = global_position.direction_to(current_closest_object.global_position)
-	focus_object = current_closest_object
-	print(initial_grip_direction)
+	set_focus_object(current_closest_object)
 
 ## Calculates the initial linear velocity needed to get to the player's hand within grab_time.
 func calculate_linear_velocity(object_global_position: Vector3) -> Vector3:
@@ -191,3 +194,13 @@ func calculate_linear_velocity(object_global_position: Vector3) -> Vector3:
 	
 	calculated_velocity = Vector3(velocity_x, velocity_y, velocity_z)
 	return calculated_velocity
+
+## Sets the focus object that is actively able to be flick picked up on release.
+func set_focus_object(what: RigidBody3D) -> void:
+	initial_grip_direction = global_position.direction_to(what.global_position)
+	focus_object = what
+
+## Clears the focus object, and resets the initial grip direction.
+func unfocus() -> void:
+	focus_object = null
+	initial_grip_direction = Vector3.ZERO
