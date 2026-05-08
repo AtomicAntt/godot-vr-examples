@@ -166,11 +166,8 @@ func on_grip_release() -> void:
 	# Basically, we need to ensure that the angle which we release is beyond the flick_angle_threshold.
 	# We also need to ensure that enough angular velocity exists.
 	if dot_product <= dot_product_threshold and angular_magnitude >= angular_velocity_threshold:
-		print("Flicked")
 		focus_object.linear_velocity = calculate_linear_velocity(focus_object.global_position)
-		print("Linear velocity: " + str(focus_object.linear_velocity))
-	else:
-		print("Fail flick")
+		focus_object.angular_velocity = calculate_angular_velocity(focus_object.global_basis)
 	unfocus()
 
 func on_grip_pressed() -> void:
@@ -194,6 +191,17 @@ func calculate_linear_velocity(object_global_position: Vector3) -> Vector3:
 	
 	calculated_velocity = Vector3(velocity_x, velocity_y, velocity_z)
 	return calculated_velocity
+
+## Calculates the initial angular velocity needed to get to the target_basis once grab_time elapses.
+func calculate_angular_velocity(current_basis: Basis, target_basis: Basis = Basis.IDENTITY) -> Vector3:
+	var delta_basis: Basis = target_basis * current_basis.inverse()
+	var delta_quaternion: Quaternion = Quaternion(delta_basis)
+	
+	var delta_axis: Vector3 = delta_quaternion.get_axis()
+	var delta_angle: float = delta_quaternion.get_angle()
+	
+	var angular_velocity: Vector3 = delta_axis * (delta_angle / grab_time)
+	return angular_velocity
 
 ## Sets the focus object that is actively able to be flick picked up on release.
 func set_focus_object(what: RigidBody3D) -> void:
