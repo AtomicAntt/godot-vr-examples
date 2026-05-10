@@ -40,6 +40,11 @@ var _digit_collision_shapes : Dictionary
 ## This should be the hand skeleton of the XRTools mimic. It's used IF you have a rigid_collision_hand.
 @export var xrt_hand_skeleton : Skeleton3D
 
+class CopiedCollision extends RefCounted:
+	var collision_shape : CollisionShape3D
+	var org_transform : Transform3D
+var _active_copied_collisions : Array[CopiedCollision]
+
 func _ready() -> void:
 	super()
 	
@@ -90,10 +95,6 @@ func _ready() -> void:
 			_palm_collision_shape.set_deferred("disabled", true)
 		
 			_on_skeleton_updated()
-			# Initially disable the collision of the skeleton as well
-			for item: String in rigid_collision_hand._digit_collision_shapes:
-				rigid_collision_hand._digit_collision_shapes[item].set_deferred("disabled", true)
-				rigid_collision_hand._digit_collision_shapes[item].debug_color = Color("Purple")
 			xrt_hand_skeleton.skeleton_updated.connect(_on_skeleton_updated)
 		else:
 			print("Hand skeleton for fth bind not found!")
@@ -104,6 +105,15 @@ func _ready() -> void:
 	# Now, we can make sure to hide/show these mimic hands when we pick/drop XRToolPickables.
 	xrt_function_pickup.connect("has_picked_up", _on_picked_up)
 	xrt_function_pickup.connect("has_dropped", _on_dropped)
+
+func _physics_process(_delta: float) -> void:
+	if not is_instance_valid(xrt_function_pickup) or not is_instance_valid(rigid_collision_hand) or not is_instance_valid(xrt_hand_skeleton):
+		return
+	
+	_update_copied_collisions()
+	
+	#if is_instance_valid(xrt_function_pickup.picked_up_object):
+		#_on_skeleton_updated()
 
 ## Hide this hand, show the XRTools hand so those grab points can display with the pose animations.
 func _on_picked_up(what: Variant) -> void:
@@ -132,6 +142,8 @@ func _on_picked_up(what: Variant) -> void:
 			for item: String in _digit_collision_shapes:
 				_digit_collision_shapes[item].set_deferred("disabled", false)
 			_palm_collision_shape.set_deferred("disabled", false)
+			
+			copy_collisions()
 
 ## Show this hand, hide the XRTools hand.
 func _on_dropped() -> void:
@@ -149,6 +161,8 @@ func _on_dropped() -> void:
 		for item: String in _digit_collision_shapes:
 			_digit_collision_shapes[item].set_deferred("disabled", true)
 		_palm_collision_shape.set_deferred("disabled", true)
+	
+	_remove_copied_collisions()
 
 ## In the case that we are using RigidCollisionHand, add collision exclusion to a pickable item.
 func add_collision_exclusion(what: RigidBody3D) -> void:
@@ -185,6 +199,7 @@ func _find_child(node: Node, type: String) -> Node:
 	# No child found matching type
 	return null
 
+## =================== This function is from the XRTools Collision Hand ===============================
 func _on_skeleton_updated():
 	if not xrt_hand_skeleton:
 		return
@@ -216,6 +231,7 @@ func _on_skeleton_updated():
 				get_parent().call_deferred("add_child", collision_node, false, Node.INTERNAL_MODE_BACK)
 				# Initially, we want it disabled.
 				collision_node.set_deferred("disabled", true)
+				collision_node.debug_color = Color("Purple")
 				
 				_digit_collision_shapes[bone_name] = collision_node
 
@@ -233,3 +249,44 @@ func _on_skeleton_updated():
 				
 			var global_bone_transform = xrt_hand_skeleton.global_transform * bone_transform
 			collision_node.transform = xrtools_hand.global_transform.inverse() * global_bone_transform * offset
+
+## ====================== These functions are from the XRTools Function Pickup =============================
+
+## This is for when you have a rigid_collision_hand and pick something up.
+## In addition to collisions for the mimic xrtools hand skeleton, its also the collision shape of
+## the pickable grabbed.
+func copy_collisions() -> void:
+	if not is_instance_valid(rigid_collision_hand) or not is_instance_valid(xrt_function_pickup):
+		return
+	
+	for child: Node in xrt_function_pickup.picked_up_object.get_children():
+		if child is CollisionShape3D and not child.disabled:
+			var copied_collision : CopiedCollision = CopiedCollision.new()
+			copied_collision.collision_shape = CollisionShape3D.new()
+			copied_collision.collision_shape.shape = child.shape
+			copied_collision.org_transform = child.transform
+
+			rigid_collision_hand.add_child(copied_collision.collision_shape, false, Node.INTERNAL_MODE_BACK)
+			copied_collision.collision_shape.global_transform = xrt_function_pickup.picked_up_object.global_transform * \
+				copied_collision.org_transform
+
+			_active_copied_collisions.push_back(copied_collision)
+
+# Adjust positions of our collisions to match actual location of object
+func _update_copied_collisions():
+	if not is_instance_valid(rigid_collision_hand) or not is_instance_valid(xrt_function_pickup):
+		return
+	
+	for copied_collision : CopiedCollision in _active_copied_collisions:
+		if is_instance_valid(copied_collision.collision_shape):
+			copied_collision.collision_shape.global_transform = xrt_function_pickup.picked_up_object.global_transform * \
+				copied_collision.org_transform
+
+# Remove copied collision shapes
+func _remove_copied_collisions():
+	for copied_collision : CopiedCollision in _active_copied_collisions:
+		if is_instance_valid(copied_collision.collision_shape):
+			rigid_collision_hand.remove_child(copied_collision.collision_shape)
+			copied_collision.collision_shape.queue_free()
+
+	_active_copied_collisions.clear()
