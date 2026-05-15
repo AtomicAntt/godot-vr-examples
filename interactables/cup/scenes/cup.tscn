@@ -97,7 +97,7 @@ open_pose = ExtResource("7_qng8f")
 closed_pose = ExtResource("7_qng8f")
 metadata/_custom_type_script = "uid://dvobm6vcfnqe8"
 
-[node name="PickableObject" unique_id=459251927 instance=ExtResource("1_y8hwh")]
+[node name="Cup" unique_id=459251927 instance=ExtResource("1_y8hwh")]
 
 [node name="Cup2" type="Node3D" parent="." index="0" unique_id=2107205562]
 

@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://v1lkq313le7q" path="res://xr/flick_pickup.gd" id="8_g0yu7"]
 [ext_resource type="PackedScene" uid="uid://raeeicvvindd" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_hand.tscn" id="9_paiur"]
 [ext_resource type="PackedScene" uid="uid://bfudxphj6geib" path="res://interactables/cup/scenes/cup.tscn" id="13_paiur"]
+[ext_resource type="Script" uid="uid://bj241yvnhpfvm" path="res://spring_button.gd" id="14_0oscf"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_paiur"]
 animation = &"Grip"
@@ -102,6 +103,15 @@ albedo_color = Color(0.5155305, 0.3592498, 0.102850236, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5xujp"]
 size = Vector3(2, 0.48740235, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_wj1b2"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_paiur"]
+height = 0.1
+radius = 0.1
 
 [node name="ExamplesScene" type="Node3D" unique_id=1140125279]
 script = ExtResource("1_4jpk7")
@@ -277,8 +287,30 @@ shape = SubResource("BoxShape3D_5xujp")
 [node name="Can" parent="Pickables" unique_id=2070288848 instance=ExtResource("8_4c12p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16266322, 0.5564446, -0.721269)
 
-[node name="PickableObject" parent="Pickables" unique_id=459251927 instance=ExtResource("13_paiur")]
+[node name="Cup" parent="Pickables" unique_id=459251927 instance=ExtResource("13_paiur")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3700074, 0.52072656, -0.69173455)
+
+[node name="SpringButton" type="Node3D" parent="." unique_id=1977752987]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58993185, 0.8472903, -0.98733085)
+script = ExtResource("14_0oscf")
+
+[node name="ButtonInteractable" type="RigidBody3D" parent="SpringButton" unique_id=14056137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+gravity_scale = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpringButton/ButtonInteractable" unique_id=295483778]
+mesh = SubResource("CylinderMesh_wj1b2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpringButton/ButtonInteractable" unique_id=621600747]
+shape = SubResource("CylinderShape3D_paiur")
+
+[node name="SliderJoint3D" type="SliderJoint3D" parent="SpringButton" unique_id=1920091305]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
+node_a = NodePath("../ButtonInteractable")
+linear_limit/upper_distance = 0.0
+linear_limit/lower_distance = -0.2
+
+[node name="EquillibriumMarker" type="Marker3D" parent="SpringButton" unique_id=365726762]
 
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftTrackedHand/LeftHandHumanoid2"]
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftHand"]

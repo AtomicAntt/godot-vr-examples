@@ -37,7 +37,6 @@ func apply_force_to_hand(delta: float, hand_rigidbody: RigidBody3D, controller_g
 	
 	var needed_acceleration: Vector3 = (move_delta - (current_velocity * delta)) / half_t2
 	var linear_force: Vector3 = (0.5 / state.inverse_mass) * needed_acceleration
-	
 	hand_rigidbody.apply_central_force(linear_force)
 
 func apply_torque_to_hand(delta: float, hand_rigidbody: RigidBody3D, controller_global_orientation: Basis) -> void:
