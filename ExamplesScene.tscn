@@ -13,7 +13,7 @@
 [ext_resource type="Script" uid="uid://v1lkq313le7q" path="res://xr/flick_pickup.gd" id="8_g0yu7"]
 [ext_resource type="PackedScene" uid="uid://raeeicvvindd" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_hand.tscn" id="9_paiur"]
 [ext_resource type="PackedScene" uid="uid://bfudxphj6geib" path="res://interactables/cup/scenes/cup.tscn" id="13_paiur"]
-[ext_resource type="Script" uid="uid://bj241yvnhpfvm" path="res://spring_button.gd" id="14_0oscf"]
+[ext_resource type="Script" uid="uid://bj241yvnhpfvm" path="res://xr/spring_button.gd" id="14_0oscf"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0oscf"]
 animation = &"Grip"
