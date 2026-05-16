@@ -293,15 +293,23 @@ shape = SubResource("BoxShape3D_5xujp")
 [node name="Can" parent="Pickables" unique_id=2070288848 instance=ExtResource("8_4c12p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16266322, 0.5564446, -0.721269)
 
+[node name="Can2" parent="Pickables" unique_id=733455074 instance=ExtResource("8_4c12p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3597152, 0.5564446, -0.721269)
+
 [node name="Cup" parent="Pickables" unique_id=459251927 instance=ExtResource("13_paiur")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3700074, 0.52072656, -0.69173455)
 
 [node name="SpringButton" type="Node3D" parent="." unique_id=1977752987]
+editor_description = "This is a physics based button which is activated with pressure.
+
+Instructions: If you need to adjust the button distance, please edit button distance inside the inspector.
+
+You may move the ButtonBase or remove it if needed."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0710969, 0.5247929, -0.6924405)
 script = ExtResource("14_0oscf")
 
 [node name="ButtonInteractable" type="RigidBody3D" parent="SpringButton" unique_id=14056137]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.029999971, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpringButton/ButtonInteractable" unique_id=295483778]
 mesh = SubResource("CylinderMesh_wj1b2")
@@ -309,6 +317,15 @@ surface_material_override/0 = SubResource("StandardMaterial3D_0oscf")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SpringButton/ButtonInteractable" unique_id=1780748589]
 shape = SubResource("CylinderShape3D_0oscf")
+
+[node name="SliderJoint3D" type="SliderJoint3D" parent="SpringButton" unique_id=1920091305]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
+node_a = NodePath("../ButtonInteractable")
+linear_limit/upper_distance = 0.0
+linear_limit/lower_distance = -0.03
+
+[node name="EquillibriumMarker" type="Marker3D" parent="SpringButton" unique_id=365726762]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.029999971, 0)
 
 [node name="ButtonBase" type="StaticBody3D" parent="SpringButton" unique_id=2097563594]
 editor_description = "This should have a collision exclusion with the button interactable on runtime."
@@ -319,15 +336,6 @@ collision_mask = 0
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpringButton/ButtonBase" unique_id=875279753]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.013471782, 0)
 mesh = SubResource("BoxMesh_0oscf")
-
-[node name="SliderJoint3D" type="SliderJoint3D" parent="SpringButton" unique_id=1920091305]
-transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
-node_a = NodePath("../ButtonInteractable")
-linear_limit/upper_distance = 0.0
-linear_limit/lower_distance = -0.03
-
-[node name="EquillibriumMarker" type="Marker3D" parent="SpringButton" unique_id=365726762]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftTrackedHand/LeftHandHumanoid2"]
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftHand"]

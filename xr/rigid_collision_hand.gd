@@ -1,5 +1,6 @@
 class_name RigidCollisionHand
 extends RigidBody3D
+## Lightweight RigidBody3D hand solution.
 
 @export var hand_skeleton: Skeleton3D
 @export var xr_controller: XRController3D
