@@ -43,6 +43,10 @@ func _ready() -> void:
 		adjust_button(button_distance)
 		return
 	
+	if is_instance_valid(get_node("ButtonBase")):
+		var button_base: PhysicsBody3D = get_node("ButtonBase")
+		button_interactable.add_collision_exception_with(button_base)
+	
 	button_interactable.gravity_scale = 0.0
 	button_interactable.lock_rotation = true
 

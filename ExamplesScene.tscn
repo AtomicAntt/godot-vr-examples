@@ -118,6 +118,9 @@ radius = 0.04
 [sub_resource type="BoxMesh" id="BoxMesh_0oscf"]
 size = Vector3(0.1, 0.05, 0.1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_paiur"]
+size = Vector3(0.1, 0.05, 0.1)
+
 [node name="ExamplesScene" type="Node3D" unique_id=1140125279]
 script = ExtResource("1_4jpk7")
 
@@ -323,12 +326,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.029999971, 0)
 [node name="ButtonBase" type="StaticBody3D" parent="SpringButton" unique_id=2097563594]
 editor_description = "This should have a collision exclusion with the button interactable on runtime."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
-collision_layer = 0
 collision_mask = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpringButton/ButtonBase" unique_id=875279753]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.013471782, 0)
 mesh = SubResource("BoxMesh_0oscf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpringButton/ButtonBase" unique_id=196651957]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.013471782, 0)
+shape = SubResource("BoxShape3D_paiur")
 
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftTrackedHand/LeftHandHumanoid2"]
 [editable path="XROrigin3D/LeftController/RigidCollisionHand/LeftHand"]
