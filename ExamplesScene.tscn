@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://dfpwh0nvcb8i5" path="res://hands/LeftHandHumanoid.gltf" id="6_dd34m"]
 [ext_resource type="Script" uid="uid://v24k3wky50vp" path="res://xr/rigid_collision_hand.gd" id="7_6knfx"]
 [ext_resource type="PackedScene" uid="uid://njx823gyk04n" path="res://addons/godot-xr-tools/hands/scenes/highpoly/left_hand.tscn" id="7_g0yu7"]
-[ext_resource type="PackedScene" uid="uid://3vegggwxq48j" path="res://interactables/can/scenes/can.tscn" id="8_4c12p"]
 [ext_resource type="PackedScene" uid="uid://chlax58qn2qof" path="res://hands/RightHandHumanoid.gltf" id="8_csglg"]
 [ext_resource type="Script" uid="uid://v1lkq313le7q" path="res://xr/flick_pickup.gd" id="8_g0yu7"]
 [ext_resource type="PackedScene" uid="uid://raeeicvvindd" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_hand.tscn" id="9_paiur"]
@@ -290,14 +289,8 @@ shape = SubResource("BoxShape3D_5xujp")
 
 [node name="Pickables" type="Node3D" parent="." unique_id=825575335]
 
-[node name="Can" parent="Pickables" unique_id=2070288848 instance=ExtResource("8_4c12p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16266322, 0.5564446, -0.721269)
-
-[node name="Can2" parent="Pickables" unique_id=733455074 instance=ExtResource("8_4c12p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3597152, 0.5564446, -0.721269)
-
 [node name="Cup" parent="Pickables" unique_id=459251927 instance=ExtResource("13_paiur")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3700074, 0.52072656, -0.69173455)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22912747, 0.52072656, -0.69173455)
 
 [node name="SpringButton" type="Node3D" parent="." unique_id=1977752987]
 editor_description = "This is a physics based button which is activated with pressure.
